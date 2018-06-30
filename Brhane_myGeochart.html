@@ -1,0 +1,69 @@
+<!-- Name: Brhane Bahrishum
+     App: Emotional Intelligence Map-->
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {
+        'packages':['geochart'],
+        'mapsApiKey': 'AIzaSyBAaLjhW7iuy7yHl5VYhimBU8WZrRXNhR4'
+      });
+      google.charts.setOnLoadCallback(drawRegionsMap);
+      function drawRegionsMap() {
+        var jsonData = $.ajax({
+          url : "http://emotional-apps.com/apis/meit/stats/getdata.php?test=1&gender=all&age=all&begindate=2000-01-01&enddate=2017-11-24",
+          dataType : "json",
+          async : false
+        }).responseText;
+
+    var jsonDataObject = JSON.parse(jsonData);
+    var data = new google.visualization.DataTable();//set the datatable
+        //add columns
+       data.addColumn('string', 'Country');
+       data.addColumn('string', 'iso3');
+       data.addColumn('number','Average Emotional Score');
+       data.addColumn('number','Time Average');
+       //iterate and add rows
+       $.each(jsonDataObject,function(){
+         data.addRows([[this.country,this.iso3,parseFloat(this.score_average),parseFloat(this.time_average)]]);
+       })
+       //set chart options
+       var options = {
+         colors: ['#00008B'], //blue black map color range
+         backgroundColor:'#F0F0F0', // overall map background color
+         datalessRegionColor: '#FFF',//color for countries with no data
+         tooltip:{isHtml: true, //apply html font styles
+                  textStyle : { color: '#000',
+                        fontName: 'Arial',
+                        fontSize: 20
+                      }
+                  }
+          };
+        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+      chart.draw(data, options);
+      }
+    </script>
+    <style>
+    /* styles */
+    body{
+      background-color: #F0F0F0;
+    }
+    #page_title{
+      text-align: center;
+      width: 100%;
+      height: 5%;
+    }
+    #regions_div{
+      width: 100%;
+      height: 90%;
+      margin:auto;
+    }
+    </style>
+  </head>
+  <body>
+    <h1 id="page_title">World Wide Emotional Intelligence Map</h1>
+    <div id="regions_div"></div>
+  </body>
+</html>
